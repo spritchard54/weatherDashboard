@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./assets/reset.css">
+    <link rel="stylesheet" href="./assets/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+</head>
+<body>
+    <header>
+        <h1>Weather Dashboard</h1>
+    </header>
+    <section id="container">
+        <div id="leftColumn">
+            <div class="borderBottom">
+                <h1>Search for a City:</h1>
+                <form id="cityForm">
+                    <input type="text" id="cityName" name="cityName" placeholder="Enter a city name...">
+                    <button id="searchBtn">Search</button>
+                </form>
+            </div>
+            <ul id="previousCities"></ul>
+        </div>
+        <div id="rightColumn">
+            <div id="currentCity">
+                <h1 id="cityName">Current City (10/28/2023)</h1>
+                <ul>
+                    <li>Temp:</li>
+                    <li>Wind:</li>
+                    <li>Humidity:</li>
+                </ul>
+            </div>
+            <div id="fiveDayForecast">
+                    <div id="fiveDayHeader">
+                        <h1>5-Day Forecast</h1>
+                    </div>
+                    <div id="dayBlocks">
+                        <div id="day-1" class="day">Mon</div>
+                        <div id="day-2" class="day">Tue</div>
+                        <div id="day-3" class="day">Wed</div>
+                        <div id="day-4" class="day">Thu</div>
+                        <div id="day-5" class="day">Fri</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+    </section>
+    <Section id="expected">
+    <img style="width: 750px; margin-left: 370px;" src="./assets/images/06-server-side-apis-homework-demo.png">
+    </Section>
+
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<script language="JavaScript" src="./assets/weather.js"></script>
+
+</body>
+</html>
