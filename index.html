@@ -23,11 +23,19 @@
         </div>
         <div id="rightColumn">
             <div id="currentCity">
-                <h1 id="cityName">Current City (10/28/2023)</h1>
+                <h1>
+                    <span id="cityName"></span>
+                </h1>
                 <ul>
-                    <li>Temp:</li>
-                    <li>Wind:</li>
-                    <li>Humidity:</li>
+                    <li>
+                        Temp: <span id="currentTemp"></span>
+                    </li>
+                    <li>
+                        Wind: <span id="currentWind"></span>
+                    </li>
+                    <li>
+                        Humidity: <span id="currentHumidity"></span>
+                    </li>
                 </ul>
             </div>
             <div id="fiveDayForecast">
@@ -35,11 +43,11 @@
                         <h1>5-Day Forecast</h1>
                     </div>
                     <div id="dayBlocks">
-                        <div id="day-1" class="day">Mon</div>
-                        <div id="day-2" class="day">Tue</div>
-                        <div id="day-3" class="day">Wed</div>
-                        <div id="day-4" class="day">Thu</div>
-                        <div id="day-5" class="day">Fri</div>
+                        <ul>
+                            <li ><span id="tempLi"></span></li>
+                            <li><span id="windLi"></span></li>
+                            <li><span id="humidityLi"></span></li>
+                        </ul>
                     </div>
                 </div>
             </div>

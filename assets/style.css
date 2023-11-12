@@ -74,14 +74,15 @@ display: flex;}
     flex: 1 0 10%;
     margin: 1%;
     border: 1px solid black;
-    padding: 10% 0%;
-    text-align: center;
+    padding: 10% 2%;
+    text-align: left;
     background-color: #323d4e;
     color: white;
 }
 
 button {
     background-color: #6891e3;
+    border-radius: 5px;
     width: 100%;
     border: none;
     padding: 3%;
@@ -105,17 +106,21 @@ button {
     padding: 10% 0%;
 }
 
-.cities {
-    width: 100%;
-    color: black;
-    background-color: gray;
-    border: 1px soild back;
-}
+
 
 .prevCities {
     background-color: #aeaeae;
     color: black;
-    margin-top: 1%;
-    
+    margin-top: 1%; 
 }
 
+.prevCities:hover {
+    background-color: #251360;
+    color: white;
+    margin-top: 1%; 
+}
+
+.wBlock {
+    padding: 5%;
+    background-color: red;
+}
