@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="./assets/reset.css">
     <link rel="stylesheet" href="./assets/style.css">
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Dashboard</title>
 </head>
+
 <body>
     <header>
         <h1>Weather Dashboard</h1>
@@ -22,48 +24,34 @@
             <ul id="previousCities"></ul>
         </div>
         <div id="rightColumn">
+
+            <!--Current Conidtions-->
             <div id="currentCity">
                 <h1>
-                    <span id="cityName"></span>
+                    <span id="currentCityName"></span><img id="weatherIcon">
                 </h1>
                 <ul>
-                    <li>
-                        Temp: <span id="currentTemp"></span>
-                    </li>
-                    <li>
-                        Wind: <span id="currentWind"></span>
-                    </li>
-                    <li>
-                        Humidity: <span id="currentHumidity"></span>
-                    </li>
+                    <li>Temp: <span id="currentTemp"></span></li>
+                    <li>Wind: <span id="currentWind"></span></li>
+                    <li>Humidity: <span id="currentHumidity"></span></li>
                 </ul>
             </div>
+
+            <!--Five Day Forecast-->
             <div id="fiveDayForecast">
-                    <div id="fiveDayHeader">
-                        <h1>5-Day Forecast</h1>
-                    </div>
-                    <div id="dayBlocks">
-                        <ul>
-                            <li ><span id="tempLi"></span></li>
-                            <li><span id="windLi"></span></li>
-                            <li><span id="humidityLi"></span></li>
-                        </ul>
-                    </div>
+                <div id="fiveDayHeader">
+                    <h1>5-Day Forecast</h1>
+                </div>
+                <div id="dayBlocks">
                 </div>
             </div>
         </div>
-
-        
-
+        </div>
     </section>
-    <Section id="expected">
-    <img style="width: 750px; margin-left: 370px;" src="./assets/images/06-server-side-apis-homework-demo.png">
-    </Section>
-
-
-
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="./assets/weather.js"></script>
-
+    <!--JavaScript Files-->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script>dayjs().format()</script>
+    <script src="./assets/weather.js"></script>
 </body>
 </html>

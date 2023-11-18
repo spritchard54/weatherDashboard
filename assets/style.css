@@ -2,15 +2,20 @@ h1 {
     font-size: 140%;
 }
 
+h2 {
+    margin-top: 2%;
+    font-size: 120%;
+}
+
 header {
-    background-image: linear-gradient(to right , #3d47a0, #251360);
+    background-image: linear-gradient(to right, #3d47a0, #251360);
     color: white;
     padding: 1%;
     text-align: center;
     font-size: 25px;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     /* border: 5px solid orange; */
-    }
+}
 
 #container {
     max-width: 100%;
@@ -40,13 +45,19 @@ input {
 
 #currentCity {
     border: 1px solid black;
-    margin-top: 1%;
+    margin-top: 0%;
     margin-bottom: 1%;
-    padding-top: 1%;
+    padding-top: 0%;
     padding-bottom: 2%;
     padding-right: 2%;
     padding-left: 2%;
 
+}
+
+#weatherIcon {
+    position: relative;
+    top: 20px;
+    right: 4px;
 }
 
 ul {
@@ -67,14 +78,15 @@ ul li {
 
 
 #dayBlocks {
-display: flex;}
+    display: flex;
+}
 
 
 .day {
     flex: 1 0 10%;
     margin: 1%;
     border: 1px solid black;
-    padding: 10% 2%;
+    padding: 5% 2%;
     text-align: left;
     background-color: #323d4e;
     color: white;
@@ -97,12 +109,6 @@ button {
 }
 
 #expected {
-    /* background-image: url(./images/06-server-side-apis-homework-demo.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    height: 100%;
-    border: 5px solid red; */
     padding: 10% 0%;
 }
 
@@ -111,16 +117,32 @@ button {
 .prevCities {
     background-color: #aeaeae;
     color: black;
-    margin-top: 1%; 
+    margin-top: 1%;
 }
 
 .prevCities:hover {
     background-color: #251360;
     color: white;
-    margin-top: 1%; 
+    margin-top: 1%;
 }
 
-.wBlock {
+/* .wBlock {
     padding: 5%;
     background-color: red;
+} */
+
+.tilePara {
+    font-size: 16px;
+    padding: 1%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.dateStamp {
+    margin: 10px 0px;
+}
+
+.iconSize {
+    height: 10%;
+    width: 20%;
 }
