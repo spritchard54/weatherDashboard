@@ -1,5 +1,3 @@
-// console.log('Weather.js is connected');
-
 var searchBtn = $('#searchBtn');
 var appKey = 'a484d3fb0652e567788e79a914828975'
 var lat = '&lat='
