@@ -14,26 +14,25 @@ header {
     text-align: center;
     font-size: 25px;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    /* border: 5px solid orange; */
 }
 
 #container {
     max-width: 100%;
-    /* border: 5px solid aqua; */
     display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 
 #leftColumn {
     flex: 1 0 20%;
-    /* border: 5px solid red; */
     padding: 1% 1%;
 }
 
-#rightColumn {
-    flex: 1 0 75%;
-    /* border: 5px solid blue; */
-    padding: 1% 1%;
+@media only screen and (max-width: 600px) {
+    #leftColumn {
+        flex: 1 0 100%;
+    }
 }
 
 input {
@@ -43,15 +42,33 @@ input {
     width: 100%;
 }
 
-#currentCity {
-    border: 1px solid black;
-    margin-top: 0%;
-    margin-bottom: 1%;
-    padding-top: 0%;
-    padding-bottom: 2%;
-    padding-right: 2%;
-    padding-left: 2%;
+#rightColumn {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    flex: 1 0 75%;
+    margin: 0 5px;
+}
 
+@media only screen and (max-width: 600px) {
+    #rightColumn {
+        flex: 1 0 100%;
+        margin: 0 5px;
+    }
+}
+
+#currentCity {
+    flex: 1 0 100%;
+    border: 1px solid black;
+    margin: 10px 0;
+    padding: 0% 2% 2% 2%;
+}
+
+@media only screen and (max-width: 600px) {
+    #currentCity {
+        flex: 1 0 100%;
+        border: none;
+    }
 }
 
 #weatherIcon {
@@ -69,18 +86,22 @@ ul li {
 }
 
 #fiveDayForecast {
+    flex: 1 0 100%;
     border: 1px solid black;
-    padding-top: 1%;
-    padding-bottom: 2%;
-    padding-right: 2%;
-    padding-left: 2%;
+    padding: 2%;
 }
 
+@media only screen and (max-width: 600px) {
+    #fiveDayForecast {
+        flex: 1 0 100%;
+        border: none;
+    }
+}
 
 #dayBlocks {
     display: flex;
+    flex-wrap: wrap;
 }
-
 
 .day {
     flex: 1 0 10%;
@@ -90,6 +111,13 @@ ul li {
     text-align: left;
     background-color: #323d4e;
     color: white;
+}
+
+@media only screen and (max-width: 600px) {
+    .day {
+        flex: 1 0 50%;
+        margin-right: 15px;
+    }
 }
 
 button {
