@@ -72,7 +72,7 @@ function getWeatherInfo(userCity) {
       return response.json();
     })
     .then(function (data) {
-      console.log(data);
+      console.log("Current Weather Fetch ", data);
       var temp = data.main.temp;
       var windSpeed = data.wind.speed;
       var humidity = data.main.humidity;
@@ -106,7 +106,7 @@ function getFiveDayWeather(lat, lon) {
       return response.json();
     })
     .then(function (data) {
-      // console.log(data);
+      console.log("5 Day Forecast Fetch ", data);
 
       for (var i = 6; i < data.list.length; i = i + 8) {
         // Next 4 lines pull the data elements from OpenWeather
@@ -165,41 +165,12 @@ fetch(
   })
   // display their city and the current day using dayjs
   .then(function (data) {
-    console.log(data);  
+    console.log("IP GEO ", data);  
     
     $("#currentCityName").text(data.city + dayjs().format(" (MM/D/YYYY)"));
 
-    // add forecast columns to the page with initial content
-    // for (i = 1; i < 6; i++) {
-    //   var forecastColEl = $("<div>");
-    //   var forecastContentEl = $("<div>");
-    //   var dateEl = $("<h6>");
-    //   var iconEl = $("<img>");
-    //   var tempEl = $("<p>");
-    //   var windEl = $("<p>");
-    //   var humidityEl = $("<p>");
+    
 
-    //   dateEl.text(dayjs().add(i, "day").format("MM/D/YYYY"));
-
-    //   iconEl.attr("id", "day-" + i + "-icon");
-
-    //   tempEl.text("Temp: ");
-    //   tempEl.attr("id", "day-" + i + "-temp");
-
-    //   windEl.text("Wind: ");
-    //   windEl.attr("id", "day-" + i + "-wind");
-
-    //   humidityEl.text("Humidity: ");
-    //   humidityEl.attr("id", "day-" + i + "-humidity");
-
-    //   forecastContentEl.addClass("p-3 weather-card");
-    //   forecastColEl.addClass("col");
-
-    //   forecastContentEl.append(dateEl, iconEl, tempEl, windEl, humidityEl);
-    //   forecastColEl.append(forecastContentEl);
-    //   $("#forecast-row").append(forecastColEl);
-    // }
-
-    // call display forecast using city found with ip address
+    // call getWeatherInfo using city found with ip address
     getWeatherInfo(data.city);
   });
