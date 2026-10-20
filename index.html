@@ -1,58 +1,61 @@
 <html lang="en">
-
-<head>
-    <link rel="stylesheet" href="./assets/reset.css">
-    <link rel="stylesheet" href="./assets/style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="stylesheet" href="./assets/reset.css" />
+    <link rel="stylesheet" href="./assets/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather Dashboard</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <header>
-        <h1>Weather Dashboard</h1>
+      <h1>Weather Dashboard</h1>
     </header>
     <section id="container">
-        <div id="leftColumn">
-            <div class="borderBottom">
-                <h1>Search for a City:</h1>
-                <form id="cityForm">
-                    <input type="text" id="cityName" name="cityName" placeholder="Enter a city name...">
-                    <button id="searchBtn">Search</button>
-                </form>
-            </div>
-            <ul id="previousCities"></ul>
+      <div id="leftColumn">
+        <div class="borderBottom">
+          <h1>Search for a City:</h1>
+          <form id="cityFormEl">
+            <input
+              type="text"
+              id="cityName"
+              name="cityName"
+              placeholder="Enter a city name..."
+            />
+            <button id="searchBtn">Search</button>
+          </form>
         </div>
-        <div id="rightColumn">
+        <ul id="previousCitiesEl"></ul>
+      </div>
+      <div id="rightColumn">
+        <!--Current Conidtions-->
+        <div id="currentCity">
+          <h1>
+            <span id="currentCityName"></span>
+            <img id="weatherIcon" />
+          </h1>
+          <ul>
+            <li>Temp: <span id="currentTemp"></span></li>
+            <li>Wind: <span id="currentWind"></span></li>
+            <li>Humidity: <span id="currentHumidity"></span></li>
+          </ul>
+        </div>
 
-            <!--Current Conidtions-->
-            <div id="currentCity">
-                <h1>
-                    <span id="currentCityName"></span>
-                    <img id="weatherIcon">
-                </h1>
-                <ul>
-                    <li>Temp: <span id="currentTemp"></span></li>
-                    <li>Wind: <span id="currentWind"></span></li>
-                    <li>Humidity: <span id="currentHumidity"></span></li>
-                </ul>
-            </div>
-
-            <!--Five Day Forecast-->
-            <div id="fiveDayForecast">
-                <div id="fiveDayHeader">
-                    <h1>5-Day Forecast</h1>
-                </div>
-                <div id="dayBlocks">
-                </div>
-            </div>
+        <!--Five Day Forecast-->
+        <div id="fiveDayForecast">
+          <div id="fiveDayHeader">
+            <h1>5-Day Forecast</h1>
+          </div>
+          <div id="dayBlocks"></div>
         </div>
-        </div>
+      </div>
     </section>
     <!--JavaScript Files-->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script>dayjs().format()</script>
+    <script>
+      dayjs().format();
+    </script>
     <script src="./assets/weather.js"></script>
-</body>
+  </body>
 </html>

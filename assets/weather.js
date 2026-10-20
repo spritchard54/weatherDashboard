@@ -3,33 +3,37 @@ var appKey = "a484d3fb0652e567788e79a914828975";
 var lat = "&lat=";
 var lon = "&lon=";
 var today = dayjs().format(" (MM/D/YYYY)");
-var cityFormEl = $("#cityForm"); //Form Element ID
-var previousCitiesEl = $("#previousCities"); //UL ID
+const cityFormEl = document.getElementById("cityFormEl");
+const previousCitiesEl = document.getElementById("previousCitiesEl");
 var cityArray = JSON.parse(localStorage.getItem("cityArray")) || [];
-
+const dayBlocks = document.getElementById("dayBlocks");
+const weatherIconEl = document.getElementById("weatherIcon");
 
 // Begin user inputs via form
-function handleFormSubmit(event) {
+const handleFormSubmit = (event) => {
   event.preventDefault();
-  dayBlocks.innerHTML = ""; //clears previous days from dayblocks when submitting a new city
-  var value = $("input[name=cityName]").val(); //variable created to hold the value entered into the input
-  cityArray.push(value);
+  //clears previous days from dayblocks when submitting a new city
+  dayBlocks.innerHTML = "";
 
-  if (value == "") {
+  //variable created to hold the value entered into the input
+  const userCity = document.getElementById("cityName").value.trim();
+  if (userCity === "") {
     alert("Enter a city name to see the weather.");
     // Prevent empty value from being saved in local storage or appearing in previous cities
-    return false;
+    return;
   }
 
-  $("input[name=cityName]").val(""); // Resets the input field after you submit city entered in input
+  cityArray.push(userCity);
 
-  var cityBtn = $("<button>");
-  cityBtn.text(value);
-  cityBtn.addClass("prevCities");
+  // Resets the input field after you submit city entered in input
+  document.getElementById("cityName").value = "";
 
-  cityBtn.on("click", function () {
-    getWeatherInfo(value);
+  const cityBtn = document.createElement("button");
+  cityBtn.textContent = userCity;
+  cityBtn.classList.add("prevCities");
 
+  cityBtn.addEventListener("click", () => {
+    getWeatherInfo(userCity);
     dayBlocks.innerHTML = ""; // clears previous days when click on previous cities
   });
   previousCitiesEl.append(cityBtn);
@@ -37,140 +41,132 @@ function handleFormSubmit(event) {
   localStorage.setItem("cityArray", JSON.stringify(cityArray)); //
   console.log(cityArray);
 
-  getWeatherInfo(value);
-}
+  getWeatherInfo(userCity);
+};
 
-cityFormEl.on("submit", handleFormSubmit);
+cityFormEl.addEventListener("submit", handleFormSubmit);
 
-// Function below retrieves and displays previoys cities
+// Function below retrieves and displays previous cities
 
-function getPrevCities() {
-  cityArray.forEach(function (currentValue) {
+const getPrevCities = () => {
+  cityArray.forEach((currentValue) => {
     // console.log(currentValue)
-    var cityBtn = $("<button>");
-
-    cityBtn.text(currentValue);
-    cityBtn.attr("class", "prevCities");
+    const cityBtn = document.createElement("button");
+    cityBtn.textContent = currentValue;
+    cityBtn.classList.add("prevCities");
 
     previousCitiesEl.append(cityBtn);
 
-    cityBtn.on("click", function () {
+    cityBtn.addEventListener("click", () => {
       dayBlocks.innerHTML = "";
       getWeatherInfo(currentValue);
     });
   });
-}
+};
 
 getPrevCities();
 
-//begin fetch data from Open Weather
-function getWeatherInfo(userCity) {
-  fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${userCity}&appid=${appKey}&units=imperial`
-  )
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("Current Weather Fetch ", data);
-      var temp = data.main.temp;
-      var windSpeed = data.wind.speed;
-      var humidity = data.main.humidity;
-      var cityName = data.name;
-      var icon = data.weather[0].icon; // weather icon
+const getWeatherInfo = async (userCity) => {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${userCity}&appid=${appKey}&units=imperial`,
+    );
+    if (!response.ok) {
+      throw new Error("There was a problem with the response.");
+    }
+    const data = await response.json();
+    const temp = data.main.temp;
+    const windSpeed = data.wind.speed;
+    const humidity = data.main.humidity;
+    const cityName = data.name;
+    const icon = data.weather[0].icon; // weather icon
+    weatherIconEl.src = `https://openweathermap.org/img/w/${icon}.png`;
+    document.getElementById("currentTemp").textContent = `${temp}°F`;
+    document.getElementById("currentWind").textContent = `${windSpeed} MPH`;
+    document.getElementById("currentHumidity").textContent = `${humidity}%`;
+    document.getElementById("currentCityName").textContent =
+      `${cityName} today`;
 
-      //display current condition results of data fetch
-
-      $("#weatherIcon").attr(
-        "src",
-        "http://openweathermap.org/img/w/" + icon + ".png"
-      ); //weather icon
-      $("#weatherIcon").append(icon); //weather icon
-
-      $("#currentTemp").text(temp + " °F");
-      $("#currentWind").text(windSpeed + " MPH");
-      $("#currentHumidity").text(humidity + " %");
-      $("#currentCityName").text(cityName + today);
-      // console.log(data.name);
-      getFiveDayWeather(data.coord.lat, data.coord.lon);
-    });
-}
+    getFiveDayWeather(data.coord.lat, data.coord.lon);
+  } catch (error) {
+    console.log(error, error.message);
+  }
+};
 
 //begin data fetch for five-day forecast
 
-function getFiveDayWeather(lat, lon) {
-  fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${appKey}&units=imperial`
-  )
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      console.log("5 Day Forecast Fetch ", data);
+const getFiveDayWeather = async (lat, lon) => {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${appKey}&units=imperial`,
+    );
 
-      for (var i = 6; i < data.list.length; i = i + 8) {
-        // Next 4 lines pull the data elements from OpenWeather
-        var icon = data.list[i].weather[0].icon; // weather icon
-        var temp = data.list[i].main.temp;
-        var windSpeed = data.list[i].wind.speed;
-        var humidity = data.list[i].main.humidity;
-        var currentDate = data.list[i].dt_txt;
-        currentDate = dayjs(currentDate).format("MM/D/YYYY");
+    if (!response.ok) {
+      throw new Error("Houston we have a problem! With the Response.");
+    }
 
-        // console.log(currentDate);
-        // console.log(data.list[i]);
+    const data = await response.json();
 
-        // Selects empty div in HTML where weatherTiles are dynamicaly inserted
-        var dayBlocks = $("#dayBlocks");
-        // Creates a new empty div to hold weather data
-        var weatherTile = $("<div>");
-        //Appends the weather tiles to the empty dayBlock DIV
-        dayBlocks.append(weatherTile);
+    console.log(data.list.slice(0, 8).map((item) => item.dt_txt));
+    for (var i = 6; i < data.list.length; i = i + 8) {
+      // Next 4 lines pull the data elements from OpenWeather
+      const icon = data.list[i].weather[0].icon; // weather icon
+      const temp = data.list[i].main.temp;
+      const windSpeed = data.list[i].wind.speed;
+      const humidity = data.list[i].main.humidity;
+      const currentDate = dayjs(data.list[i].dt_txt).format("MM/D/YYYY");
 
-        var currentDateStamp = $("<h2>");
-        var weatherTileIcon = $("<img>"); //weather icon
-        var weatherTileTemp = $("<p>");
-        var weatherTileWind = $("<p>");
-        var weatherTileHumidity = $("<p>");
+      // Creates a new empty div to hold weather data
+      const weatherTile = document.createElement("div");
 
-        currentDateStamp.text(currentDate);
-        weatherTileTemp.text("Temp: " + temp + " °F");
-        weatherTileWind.text("Wind: " + windSpeed + " MPH");
-        weatherTileHumidity.text("Humidity: " + humidity + " %");
-        weatherTileIcon.attr(
-          "src",
-          "http://openweathermap.org/img/w/" + icon + ".png"
-        ); //weather icon
+      //Appends the weather tiles to the empty dayBlock DIV
+      dayBlocks.append(weatherTile);
 
-        weatherTile.addClass("day"); //Styles the weatherTiles
-        weatherTileTemp.addClass("tilePara");
-        weatherTileWind.addClass("tilePara");
-        weatherTileHumidity.addClass("tilePara");
+      const currentDateStamp = document.createElement("h2");
+      const weatherTileIcon = document.createElement("img"); //weather icon
+      const weatherTileTemp = document.createElement("p");
+      const weatherTileWind = document.createElement("p");
+      const weatherTileHumidity = document.createElement("p");
 
-        weatherTile.append(currentDateStamp);
-        weatherTile.append(weatherTileIcon); //weather icon
-        weatherTile.append(weatherTileTemp);
-        weatherTile.append(weatherTileWind);
-        weatherTile.append(weatherTileHumidity);
-      }
-    });
-}
+      currentDateStamp.textContent = currentDate;
+      weatherTileTemp.textContent = `Temp: ${temp}°F`;
+      weatherTileWind.textContent = `Wind: ${windSpeed} MPH`;
+      weatherTileHumidity.textContent = `Humidity: ${humidity}%`;
+      weatherTileIcon.src = `https://openweathermap.org/img/w/${icon}.png`; //weather icon
+
+      weatherTile.classList.add("day"); //Styles the weatherTiles
+      weatherTileTemp.classList.add("tilePara");
+      weatherTileWind.classList.add("tilePara");
+      weatherTileHumidity.classList.add("tilePara");
+
+      weatherTile.append(currentDateStamp);
+      weatherTile.append(weatherTileIcon); //weather icon
+      weatherTile.append(weatherTileTemp);
+      weatherTile.append(weatherTileWind);
+      weatherTile.append(weatherTileHumidity);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 // use ipgeo to get user's city from their ip address
-fetch(
-  "https://api.ipgeolocation.io/ipgeo?apiKey=5dbe00f354b141a2aae179954060f69d&fields=city, zipcode"
-)
-  .then(function (response) {
-    return response.json();
-  })
-  // display their city and the current day using dayjs
-  .then(function (data) {
-    console.log("IP GEO ", data);  
-    
+const locationLookup = async () => {
+  const response = await fetch(
+    "https://api.ipgeolocation.io/ipgeo?apiKey=5dbe00f354b141a2aae179954060f69d&fields=city, zipcode",
+  );
+  try {
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error("There was a problem with the GEO response");
+      return;
+    }
+    console.log("IP GEO ", data);
     $("#currentCityName").text(data.city + dayjs().format(" (MM/D/YYYY)"));
-
-    
-
     // call getWeatherInfo using city found with ip address
     getWeatherInfo(data.city);
-  });
+  } catch (error) {
+    console.log(error.message, error);
+  }
+};
+locationLookup();
