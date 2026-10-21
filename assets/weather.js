@@ -107,14 +107,50 @@ const getFiveDayWeather = async (lat, lon) => {
 
     const data = await response.json();
 
-    console.log(data.list.slice(0, 8).map((item) => item.dt_txt));
-    for (var i = 6; i < data.list.length; i = i + 8) {
-      // Next 4 lines pull the data elements from OpenWeather
-      const icon = data.list[i].weather[0].icon; // weather icon
-      const temp = data.list[i].main.temp;
-      const windSpeed = data.list[i].wind.speed;
-      const humidity = data.list[i].main.humidity;
-      const currentDate = dayjs(data.list[i].dt_txt).format("MM/D/YYYY");
+    // console.log(data.city.timezone);
+
+    const noonForecasts = data.list.filter((item) => {
+      // Add the searched city's UTC offset (in seconds) to the
+      // forecast timestamp to calculate the city's local clock time.
+      // localtimeStamp is now the same timezone as city and not UTC
+      const localTimestamp = item.dt + data.city.timezone;
+
+      // Convert seconds to milliseconds (* 1000), then create a Date object.
+      // Unix timestamps represent time since January 1, 1970, UTC.
+      const localDate = new Date(localTimestamp * 1000);
+
+      // Extract the hour (0–23) from the adjusted timestamp.
+      // Use getUTCHours() to avoid applying the browser's timezone.
+      const localHour = localDate.getUTCHours();
+      // console.log(`UTC HOURS ${localDate.getUTCHours()}`);
+      // console.log(`getHours ${localDate.getHours()}`);
+
+      // Keep only forecasts for 12 PM (noon) in the searched city.
+      return localHour === 11;
+    });
+
+    console.log(noonForecasts.length);
+    // console.log(noonForecasts);
+
+    // console.log(
+    //   noonForecasts.map((item) => {
+    //     const localDate = new Date((item.dt + data.city.timezone) * 1000);
+    //     return localDate.getUTCHours();
+    //   }),
+    // );
+
+    // console.log(data)
+    // console.log(data.list.slice(0, 8).map((item) => item.dt_txt));
+    // console.log(data.list.slice(0, 8));
+    // console.log(data.list.length);
+
+    for (let i = 0; i < noonForecasts.length; i += 1) {
+      // Next 5 lines pull the data elements from OpenWeather
+      const icon = noonForecasts[i].weather[0].icon; // weather icon
+      const temp = noonForecasts[i].main.temp;
+      const windSpeed = noonForecasts[i].wind.speed;
+      const humidity = noonForecasts[i].main.humidity;
+      const currentDate = dayjs(noonForecasts[i].dt_txt).format("MM/D/YYYY");
 
       // Creates a new empty div to hold weather data
       const weatherTile = document.createElement("div");
@@ -159,10 +195,10 @@ const locationLookup = async () => {
     const data = await response.json();
     if (!response.ok) {
       throw new Error("There was a problem with the GEO response");
-      return;
     }
-    console.log("IP GEO ", data);
-    $("#currentCityName").text(data.city + dayjs().format(" (MM/D/YYYY)"));
+    // console.log("IP GEO ", data);
+    document.getElementById("currentCityName").textContent =
+      data.city + dayjs().format("(MM/D/YYYY");
     // call getWeatherInfo using city found with ip address
     getWeatherInfo(data.city);
   } catch (error) {
