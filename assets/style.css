@@ -1,3 +1,9 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 h1 {
     font-size: 140%;
 }
@@ -19,6 +25,7 @@ header {
 #container {
     max-width: 100%;
     display: flex;
+    flex: 1;
     flex-wrap: wrap;
     flex-direction: row;
 }
@@ -30,9 +37,7 @@ header {
 }
 
 @media only screen and (max-width: 600px) {
-    #leftColumn {
-        flex: 1 0 100%;
-    }
+   
 }
 
 input {
@@ -46,14 +51,18 @@ input {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    align-content: flex-start;
     flex: 1 0 75%;
     margin: 0 5px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
     #rightColumn {
         flex: 1 0 100%;
         margin: 0 5px;
+    }
+     #leftColumn {
+        flex: 1 0 100%;
     }
 }
 
@@ -77,6 +86,13 @@ input {
     right: 4px;
 }
 
+.wIcon {
+    display: block;
+    margin: 0 auto;
+    width: 100px;
+    height: auto;
+}
+
 ul {
     margin-top: 1%;
 }
@@ -86,9 +102,10 @@ ul li {
 }
 
 #fiveDayForecast {
-    flex: 1 0 100%;
+    flex: 0 1 100%;
     border: 1px solid black;
     padding: 2%;
+    box-sizing: border-box;
 }
 
 @media only screen and (max-width: 600px) {
@@ -99,25 +116,32 @@ ul li {
 }
 
 #dayBlocks {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 1200px) {
+  #dayBlocks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  #dayBlocks {
+    grid-template-columns: 1fr;
+  }
 }
 
 .day {
-    flex: 1 0 10%;
-    margin: 1%;
+    margin-top: 20px;
     border: 1px solid black;
-    padding: 5% 2%;
+    padding: 15px;
     text-align: left;
     background-color: #323d4e;
     color: white;
-}
-
-@media only screen and (max-width: 600px) {
-    .day {
-        flex: 1 0 50%;
-        margin-right: 15px;
-    }
+    border-radius: 10px;
+    box-sizing: border-box;
 }
 
 button {
@@ -173,4 +197,23 @@ button {
 .iconSize {
     height: 10%;
     width: 20%;
+}
+
+.wtDay {
+    margin-bottom: 15px;
+}
+
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(to right, #3d47a0, #251360);
+  color: whitesmoke;
+  padding: 10px 0;
+  min-height: 50px;
+  text-align: center;
+}
+
+footer a {
+    color: whitesmoke;
 }
