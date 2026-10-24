@@ -1,4 +1,3 @@
-var searchBtn = $("#searchBtn");
 var appKey = "a484d3fb0652e567788e79a914828975";
 var lat = "&lat=";
 var lon = "&lon=";
@@ -9,9 +8,9 @@ var cityArray = JSON.parse(localStorage.getItem("cityArray")) || [];
 const dayBlocks = document.getElementById("dayBlocks");
 const weatherIconEl = document.getElementById("weatherIcon");
 
-// Begin user inputs via form
-const handleFormSubmit = (event) => {
+const handleFormSubmit = async (event) => {
   event.preventDefault();
+
   //clears previous days from dayblocks when submitting a new city
   dayBlocks.innerHTML = "";
 
@@ -22,14 +21,19 @@ const handleFormSubmit = (event) => {
     // Prevent empty value from being saved in local storage or appearing in previous cities
     return;
   }
+  const cityName = await getWeatherInfo(userCity);
 
-  cityArray.push(userCity);
+  if (!cityName) {
+    return;
+  }
+
+  cityArray.push({ searchValue: userCity, cityName });
 
   // Resets the input field after you submit city entered in input
   document.getElementById("cityName").value = "";
 
   const cityBtn = document.createElement("button");
-  cityBtn.textContent = userCity;
+  cityBtn.textContent = cityName;
   cityBtn.classList.add("prevCities");
 
   cityBtn.addEventListener("click", () => {
@@ -39,27 +43,32 @@ const handleFormSubmit = (event) => {
   previousCitiesEl.append(cityBtn);
 
   localStorage.setItem("cityArray", JSON.stringify(cityArray)); //
-  console.log(cityArray);
-
-  getWeatherInfo(userCity);
 };
 
 cityFormEl.addEventListener("submit", handleFormSubmit);
 
-// Function below retrieves and displays previous cities
-
 const getPrevCities = () => {
   cityArray.forEach((currentValue) => {
-    // console.log(currentValue)
     const cityBtn = document.createElement("button");
-    cityBtn.textContent = currentValue;
+
+    if (typeof currentValue === "string") {
+      cityBtn.textContent = currentValue;
+    } else {
+      cityBtn.textContent = currentValue.cityName;
+    }
+
     cityBtn.classList.add("prevCities");
 
     previousCitiesEl.append(cityBtn);
 
     cityBtn.addEventListener("click", () => {
       dayBlocks.innerHTML = "";
-      getWeatherInfo(currentValue);
+      const searchValue =
+        typeof currentValue === "string"
+          ? currentValue
+          : currentValue.searchValue;
+
+      getWeatherInfo(searchValue);
     });
   });
 };
@@ -67,9 +76,14 @@ const getPrevCities = () => {
 getPrevCities();
 
 const getWeatherInfo = async (userCity) => {
+  const isZipCode = /^\d{5}$/.test(userCity);
+
+
+  const locationQuery = isZipCode ? `zip=${userCity},US` : `q=${userCity}`;
+
   try {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${userCity}&appid=${appKey}&units=imperial`,
+      `https://api.openweathermap.org/data/2.5/weather?${locationQuery}&appid=${appKey}&units=imperial`,
     );
     if (!response.ok) {
       throw new Error("There was a problem with the response.");
@@ -85,15 +99,14 @@ const getWeatherInfo = async (userCity) => {
     document.getElementById("currentWind").textContent = `${windSpeed} MPH`;
     document.getElementById("currentHumidity").textContent = `${humidity}%`;
     document.getElementById("currentCityName").textContent =
-      `${cityName} today`;
+      `${cityName} ${today}`;
 
     getFiveDayWeather(data.coord.lat, data.coord.lon);
+    return cityName;
   } catch (error) {
     console.log(error, error.message);
   }
 };
-
-//begin data fetch for five-day forecast
 
 const getFiveDayWeather = async (lat, lon) => {
   try {
@@ -107,50 +120,66 @@ const getFiveDayWeather = async (lat, lon) => {
 
     const data = await response.json();
 
-    // console.log(data.city.timezone);
-
-    const noonForecasts = data.list.filter((item) => {
-      // Add the searched city's UTC offset (in seconds) to the
-      // forecast timestamp to calculate the city's local clock time.
-      // localtimeStamp is now the same timezone as city and not UTC
+    const dates = data.list.map((item) => {
       const localTimestamp = item.dt + data.city.timezone;
-
-      // Convert seconds to milliseconds (* 1000), then create a Date object.
-      // Unix timestamps represent time since January 1, 1970, UTC.
       const localDate = new Date(localTimestamp * 1000);
-
-      // Extract the hour (0–23) from the adjusted timestamp.
-      // Use getUTCHours() to avoid applying the browser's timezone.
-      const localHour = localDate.getUTCHours();
-      // console.log(`UTC HOURS ${localDate.getUTCHours()}`);
-      // console.log(`getHours ${localDate.getHours()}`);
-
-      // Keep only forecasts for 12 PM (noon) in the searched city.
-      return localHour === 11;
+      return localDate.toISOString().split("T")[0];
     });
 
-    console.log(noonForecasts.length);
-    // console.log(noonForecasts);
+    const uniqueDates = [...new Set(dates)];
 
-    // console.log(
-    //   noonForecasts.map((item) => {
-    //     const localDate = new Date((item.dt + data.city.timezone) * 1000);
-    //     return localDate.getUTCHours();
-    //   }),
-    // );
+    const selectedForecasts = [];
 
-    // console.log(data)
-    // console.log(data.list.slice(0, 8).map((item) => item.dt_txt));
-    // console.log(data.list.slice(0, 8));
-    // console.log(data.list.length);
+    uniqueDates.forEach((date) => {
+      const dailyForecasts = data.list.filter((item) => {
+        const localTimestamp = item.dt + data.city.timezone;
+        const localDate = new Date(localTimestamp * 1000);
+        const forecastDate = localDate.toISOString().split("T")[0];
+        return forecastDate === date;
+      });
 
-    for (let i = 0; i < noonForecasts.length; i += 1) {
+      const closestForecast = dailyForecasts.reduce((closest, current) => {
+        const localTimestamp = current.dt + data.city.timezone;
+        const localDate = new Date(localTimestamp * 1000);
+        const localHour = localDate.getUTCHours();
+        const closestLocalTimestamp = closest.dt + data.city.timezone;
+        const closestLocalDate = new Date(closestLocalTimestamp * 1000);
+        const closestLocalHour = closestLocalDate.getUTCHours();
+
+        if (Math.abs(localHour - 12) < Math.abs(closestLocalHour - 12)) {
+          return current;
+        }
+        return closest;
+      }, dailyForecasts[0]);
+      selectedForecasts.push(closestForecast);
+    });
+
+    const fiveDayForecasts = selectedForecasts.slice(1);
+
+    const weekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    for (let i = 0; i < fiveDayForecasts.length; i += 1) {
       // Next 5 lines pull the data elements from OpenWeather
-      const icon = noonForecasts[i].weather[0].icon; // weather icon
-      const temp = noonForecasts[i].main.temp;
-      const windSpeed = noonForecasts[i].wind.speed;
-      const humidity = noonForecasts[i].main.humidity;
-      const currentDate = dayjs(noonForecasts[i].dt_txt).format("MM/D/YYYY");
+      const icon = fiveDayForecasts[i].weather[0].icon; // weather icon
+      const temp = fiveDayForecasts[i].main.temp;
+      const windSpeed = fiveDayForecasts[i].wind.speed;
+      const humidity = fiveDayForecasts[i].main.humidity;
+      const localTimestamp = fiveDayForecasts[i].dt + data.city.timezone;
+      const localDate = new Date(localTimestamp * 1000);
+      const year = localDate.getUTCFullYear();
+      const month = localDate.getUTCMonth() + 1;
+      const day = localDate.getUTCDate();
+      const currentDate = `${month}/${day}/${year}`;
+      const dayOfWeek = localDate.getUTCDay();
+      const currentDay = weekdays[dayOfWeek];
 
       // Creates a new empty div to hold weather data
       const weatherTile = document.createElement("div");
@@ -158,23 +187,28 @@ const getFiveDayWeather = async (lat, lon) => {
       //Appends the weather tiles to the empty dayBlock DIV
       dayBlocks.append(weatherTile);
 
+      const dayEl = document.createElement("h2");
       const currentDateStamp = document.createElement("h2");
       const weatherTileIcon = document.createElement("img"); //weather icon
       const weatherTileTemp = document.createElement("p");
       const weatherTileWind = document.createElement("p");
       const weatherTileHumidity = document.createElement("p");
 
+      dayEl.textContent = currentDay;
       currentDateStamp.textContent = currentDate;
       weatherTileTemp.textContent = `Temp: ${temp}°F`;
       weatherTileWind.textContent = `Wind: ${windSpeed} MPH`;
       weatherTileHumidity.textContent = `Humidity: ${humidity}%`;
-      weatherTileIcon.src = `https://openweathermap.org/img/w/${icon}.png`; //weather icon
+      weatherTileIcon.src = `https://openweathermap.org/img/wn/${icon}@2x.png`; //weather icon
 
       weatherTile.classList.add("day"); //Styles the weatherTiles
+      dayEl.classList.add("wtDay");
       weatherTileTemp.classList.add("tilePara");
       weatherTileWind.classList.add("tilePara");
       weatherTileHumidity.classList.add("tilePara");
+      weatherTileIcon.classList.add("wIcon");
 
+      weatherTile.append(dayEl);
       weatherTile.append(currentDateStamp);
       weatherTile.append(weatherTileIcon); //weather icon
       weatherTile.append(weatherTileTemp);
@@ -186,7 +220,6 @@ const getFiveDayWeather = async (lat, lon) => {
   }
 };
 
-// use ipgeo to get user's city from their ip address
 const locationLookup = async () => {
   const response = await fetch(
     "https://api.ipgeolocation.io/ipgeo?apiKey=5dbe00f354b141a2aae179954060f69d&fields=city, zipcode",
@@ -196,10 +229,6 @@ const locationLookup = async () => {
     if (!response.ok) {
       throw new Error("There was a problem with the GEO response");
     }
-    // console.log("IP GEO ", data);
-    document.getElementById("currentCityName").textContent =
-      data.city + dayjs().format("(MM/D/YYYY");
-    // call getWeatherInfo using city found with ip address
     getWeatherInfo(data.city);
   } catch (error) {
     console.log(error.message, error);
